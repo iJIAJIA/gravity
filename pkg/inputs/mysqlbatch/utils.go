@@ -58,18 +58,18 @@ func GetTables(db *sql.DB, schemaStore schema_store.SchemaStore, tableConfigs []
 		}
 
 		for _, tableName := range allTables {
-			for _, tablePattern := range tableConfigs[i].Table {
-				if utils.Glob(tablePattern, tableName) {
-					tableDef, ok := schema[tableName]
-					if !ok {
-						log.Fatalf("table def not found, schema: %v, table: %v", schemaName, tableName)
-					}
-					log.Infof("added for batch: %s.%s", schemaName, tableName)
-					tableDefs = append(tableDefs, tableDef)
-					retTableConfigs = append(retTableConfigs, tableConfigs[i])
-					added[fmt.Sprintf("%s.%s", schemaName, tableName)] = true
+			tablePattern := tableConfigs[i].Table
+			if utils.Glob(tablePattern, tableName) {
+				tableDef, ok := schema[tableName]
+				if !ok {
+					log.Fatalf("table def not found, schema: %v, table: %v", schemaName, tableName)
 				}
+				log.Infof("added for batch: %s.%s", schemaName, tableName)
+				tableDefs = append(tableDefs, tableDef)
+				retTableConfigs = append(retTableConfigs, tableConfigs[i])
+				added[fmt.Sprintf("%s.%s", schemaName, tableName)] = true
 			}
+
 		}
 	}
 
@@ -96,7 +96,7 @@ func GetTables(db *sql.DB, schemaStore schema_store.SchemaStore, tableConfigs []
 					tableDefs = append(tableDefs, tableDef)
 					retTableConfigs = append(retTableConfigs, TableConfig{
 						Schema: schemaName,
-						Table:  []string{tableName},
+						Table:  tableName,
 					})
 				}
 			}
